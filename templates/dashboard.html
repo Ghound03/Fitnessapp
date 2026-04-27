@@ -3,8 +3,33 @@
 {% block title %}Dashboard - FitTrack Pro{% endblock %}
 
 {% block content %}
+
 <h1>Dashboard</h1>
 
-<p>Welcome, {{ current_user.username }}.</p>
-<p>This is where your workouts and progress will appear.</p>
+<p>Welcome, {{ current_user.username }}</p>
+
+<p>
+    <a href="{{ url_for('add_workout') }}">
+        Add Workout
+    </a>
+</p>
+
+{% if workouts %}
+    <h2>Your Workouts</h2>
+
+    {% for workout in workouts %}
+        <div>
+            <h3>{{ workout.title }}</h3>
+            <p>Type: {{ workout.workout_type }}</p>
+            <p>Duration: {{ workout.duration_minutes }} mins</p>
+            <p>Calories: {{ workout.calories_burned }}</p>
+            <p>{{ workout.notes }}</p>
+        </div>
+        <hr>
+    {% endfor %}
+
+{% else %}
+    <p>No workouts logged yet.</p>
+{% endif %}
+
 {% endblock %}

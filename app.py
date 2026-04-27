@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 from config import Config
-from models import db, User
+from models import db, User, Workout
 
 login_manager = LoginManager()
 
@@ -16,7 +16,6 @@ def load_user(user_id):
 
 
 def create_app():
-   
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -89,7 +88,34 @@ def create_app():
     @app.route("/dashboard")
     @login_required
     def dashboard():
-        return render_template("dashboard.html")
+        workouts = Workout.query.filter_by(user_id=current_user.id)\
+            .order_by(Workout.workout_date.desc()).all()
+
+        return render_template(
+            "dashboard.html",
+            workouts=workouts
+        )
+
+    @app.route("/workout/new", methods=["GET", "POST"])
+    @login_required
+    def add_workout():
+        if request.method == "POST":
+            workout = Workout(
+                title=request.form.get("title"),
+                workout_type=request.form.get("workout_type"),
+                duration_minutes=int(request.form.get("duration")),
+                calories_burned=int(request.form.get("calories")),
+                notes=request.form.get("notes"),
+                user_id=current_user.id
+            )
+
+            db.session.add(workout)
+            db.session.commit()
+
+            flash("Workout added successfully.", "success")
+            return redirect(url_for("dashboard"))
+
+        return render_template("add_workout.html")
 
     with app.app_context():
         db.create_all()

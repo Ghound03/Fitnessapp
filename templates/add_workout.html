@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Add Workout - FitTrack Pro{% endblock %}
+
+{% block content %}
+
+<h1>Add Workout</h1>
+
+<form method="POST">
+
+    <label>Workout Title</label>
+    <input type="text" name="title" required>
+
+    <label>Workout Type</label>
+    <input type="text" name="workout_type" required>
+
+    <label>Duration (minutes)</label>
+    <input type="number" name="duration" required>
+
+    <label>Calories Burned</label>
+    <input type="number" name="calories" required>
+
+    <label>Notes</label>
+    <textarea name="notes"></textarea>
+
+    <button type="submit">Save Workout</button>
+
+</form>
+
+{% endblock %}
