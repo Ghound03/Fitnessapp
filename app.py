@@ -1,9 +1,5 @@
-"""
-Main Flask application for FitTrack Pro.
-"""
-
-from flask import Flask, render_template
-from flask_login import LoginManager
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 from config import Config
 from models import db, User
@@ -14,15 +10,13 @@ login_manager = LoginManager()
 @login_manager.user_loader
 def load_user(user_id):
     """
-    Load a user by their ID for Flask-Login sessions.
+    Load a user by ID for Flask-Login.
     """
     return User.query.get(int(user_id))
 
 
 def create_app():
-    """
-    Create and configure the Flask application.
-    """
+   
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -33,10 +27,69 @@ def create_app():
 
     @app.route("/")
     def home():
-        """
-        Render the home page.
-        """
         return render_template("home.html")
+
+    @app.route("/register", methods=["GET", "POST"])
+    def register():
+        if current_user.is_authenticated:
+            return redirect(url_for("dashboard"))
+
+        if request.method == "POST":
+            username = request.form.get("username")
+            email = request.form.get("email")
+            password = request.form.get("password")
+
+            existing_user = User.query.filter(
+                (User.username == username) | (User.email == email)
+            ).first()
+
+            if existing_user:
+                flash("Username or email already exists.", "danger")
+                return redirect(url_for("register"))
+
+            user = User(username=username, email=email)
+            user.set_password(password)
+
+            db.session.add(user)
+            db.session.commit()
+
+            flash("Account created successfully. Please log in.", "success")
+            return redirect(url_for("login"))
+
+        return render_template("register.html")
+
+    @app.route("/login", methods=["GET", "POST"])
+    def login():
+        if current_user.is_authenticated:
+            return redirect(url_for("dashboard"))
+
+        if request.method == "POST":
+            email = request.form.get("email")
+            password = request.form.get("password")
+
+            user = User.query.filter_by(email=email).first()
+
+            if user and user.check_password(password):
+                login_user(user)
+                flash("Logged in successfully.", "success")
+                return redirect(url_for("dashboard"))
+
+            flash("Invalid email or password.", "danger")
+            return redirect(url_for("login"))
+
+        return render_template("login.html")
+
+    @app.route("/logout")
+    @login_required
+    def logout():
+        logout_user()
+        flash("You have been logged out.", "info")
+        return redirect(url_for("home"))
+
+    @app.route("/dashboard")
+    @login_required
+    def dashboard():
+        return render_template("dashboard.html")
 
     with app.app_context():
         db.create_all()
