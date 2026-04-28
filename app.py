@@ -117,6 +117,47 @@ def create_app():
 
         return render_template("add_workout.html")
 
+    @app.route("/workout/<int:workout_id>/edit", methods=["GET", "POST"])
+    @login_required
+    def edit_workout(workout_id):
+        workout = Workout.query.get_or_404(workout_id)
+
+        if workout.user_id != current_user.id:
+            flash("Access denied.", "danger")
+            return redirect(url_for("dashboard"))
+
+        if request.method == "POST":
+            workout.title = request.form.get("title")
+            workout.workout_type = request.form.get("workout_type")
+            workout.duration_minutes = int(request.form.get("duration"))
+            workout.calories_burned = int(request.form.get("calories"))
+            workout.notes = request.form.get("notes")
+
+            db.session.commit()
+
+            flash("Workout updated successfully.", "success")
+            return redirect(url_for("dashboard"))
+
+        return render_template(
+            "edit_workout.html",
+            workout=workout
+        )
+
+    @app.route("/workout/<int:workout_id>/delete", methods=["POST"])
+    @login_required
+    def delete_workout(workout_id):
+        workout = Workout.query.get_or_404(workout_id)
+
+        if workout.user_id != current_user.id:
+            flash("Access denied.", "danger")
+            return redirect(url_for("dashboard"))
+
+        db.session.delete(workout)
+        db.session.commit()
+
+        flash("Workout deleted.", "info")
+        return redirect(url_for("dashboard"))
+
     with app.app_context():
         db.create_all()
 

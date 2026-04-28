@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Workout{% endblock %}
+
+{% block content %}
+
+<h1>Edit Workout</h1>
+
+<form method="POST">
+
+    <label>Workout Title</label>
+    <input type="text"
+           name="title"
+           value="{{ workout.title }}"
+           required>
+
+    <label>Workout Type</label>
+    <input type="text"
+           name="workout_type"
+           value="{{ workout.workout_type }}"
+           required>
+
+    <label>Duration</label>
+    <input type="number"
+           name="duration"
+           value="{{ workout.duration_minutes }}"
+           required>
+
+    <label>Calories</label>
+    <input type="number"
+           name="calories"
+           value="{{ workout.calories_burned }}"
+           required>
+
+    <label>Notes</label>
+    <textarea name="notes">{{ workout.notes }}</textarea>
+
+    <button type="submit">Update Workout</button>
+
+</form>
+
+{% endblock %}
