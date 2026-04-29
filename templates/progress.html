@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Progress - FitTrack Pro{% endblock %}
+
+{% block content %}
+
+<h1>Your Progress</h1>
+
+<div class="workout-grid">
+    <div class="card">
+        <h3>Total Workouts</h3>
+        <p>{{ total_workouts }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Total Minutes</h3>
+        <p>{{ total_minutes }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Total Calories</h3>
+        <p>{{ total_calories }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Calories Burned by Workout</h2>
+
+    {% if calorie_data %}
+        <canvas id="calorieChart"></canvas>
+    {% else %}
+        <p>No progress data yet. Add workouts to see your chart.</p>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const workoutLabels = {{ workout_labels | tojson }};
+    const calorieData = {{ calorie_data | tojson }};
+</script>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% endblock %}

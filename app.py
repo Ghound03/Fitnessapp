@@ -96,6 +96,28 @@ def create_app():
             workouts=workouts
         )
 
+    @app.route("/progress")
+    @login_required
+    def progress():
+        workouts = Workout.query.filter_by(user_id=current_user.id)\
+            .order_by(Workout.workout_date.asc()).all()
+
+        total_workouts = len(workouts)
+        total_minutes = sum(workout.duration_minutes for workout in workouts)
+        total_calories = sum(workout.calories_burned for workout in workouts)
+
+        workout_labels = [workout.title for workout in workouts]
+        calorie_data = [workout.calories_burned for workout in workouts]
+
+        return render_template(
+            "progress.html",
+            total_workouts=total_workouts,
+            total_minutes=total_minutes,
+            total_calories=total_calories,
+            workout_labels=workout_labels,
+            calorie_data=calorie_data
+        )
+
     @app.route("/workout/new", methods=["GET", "POST"])
     @login_required
     def add_workout():
