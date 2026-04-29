@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+
+<h1>Contact</h1>
+
+<div class="card">
+    <p>If you have any questions about FitTrack Pro, feel free to reach out.</p>
+
+    <form>
+        <label>Name</label>
+        <input type="text" placeholder="Your name">
+
+        <label>Email</label>
+        <input type="email" placeholder="Your email">
+
+        <label>Message</label>
+        <textarea placeholder="Your message"></textarea>
+
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+{% endblock %}

@@ -179,6 +179,15 @@ def create_app():
 
         flash("Workout deleted.", "info")
         return redirect(url_for("dashboard"))
+    
+    @app.route("/about")
+    def about():
+         return render_template("about.html")
+
+
+    @app.route("/contact")
+    def contact():
+         return render_template("contact.html")
 
     with app.app_context():
         db.create_all()
