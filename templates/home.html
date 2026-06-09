@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Home - FitTrack Pro{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-<h1>Welcome to FitTrack Pro</h1>
-<p>Your fitness tracking journey starts here.</p>
+
+<div class="card">
+    <h1>Welcome to FitTrack Pro</h1>
+
+    <p>
+        Track workouts, monitor calories burned,
+        and view your fitness progress over time.
+    </p>
+
+    {% if not current_user.is_authenticated %}
+        <p>
+            <a class="btn" href="{{ url_for('register') }}">
+                Get Started
+            </a>
+        </p>
+    {% endif %}
+</div>
+
 {% endblock %}

@@ -38,6 +38,14 @@ def create_app():
             email = request.form.get("email")
             password = request.form.get("password")
 
+            if len(username) < 3:
+                flash("Username must be at least 3 characters long.", "danger")
+                return redirect(url_for("register"))
+
+            if len(password) < 6:
+                flash("Password must be at least 6 characters long.", "danger")
+                return redirect(url_for("register"))
+
             existing_user = User.query.filter(
                 (User.username == username) | (User.email == email)
             ).first()
@@ -91,10 +99,7 @@ def create_app():
         workouts = Workout.query.filter_by(user_id=current_user.id)\
             .order_by(Workout.workout_date.desc()).all()
 
-        return render_template(
-            "dashboard.html",
-            workouts=workouts
-        )
+        return render_template("dashboard.html", workouts=workouts)
 
     @app.route("/progress")
     @login_required
@@ -122,11 +127,22 @@ def create_app():
     @login_required
     def add_workout():
         if request.method == "POST":
+            duration = int(request.form.get("duration"))
+            calories = int(request.form.get("calories"))
+
+            if duration <= 0:
+                flash("Duration must be greater than zero.", "danger")
+                return redirect(url_for("add_workout"))
+
+            if calories < 0:
+                flash("Calories cannot be negative.", "danger")
+                return redirect(url_for("add_workout"))
+
             workout = Workout(
                 title=request.form.get("title"),
                 workout_type=request.form.get("workout_type"),
-                duration_minutes=int(request.form.get("duration")),
-                calories_burned=int(request.form.get("calories")),
+                duration_minutes=duration,
+                calories_burned=calories,
                 notes=request.form.get("notes"),
                 user_id=current_user.id
             )
@@ -149,10 +165,21 @@ def create_app():
             return redirect(url_for("dashboard"))
 
         if request.method == "POST":
+            duration = int(request.form.get("duration"))
+            calories = int(request.form.get("calories"))
+
+            if duration <= 0:
+                flash("Duration must be greater than zero.", "danger")
+                return redirect(url_for("edit_workout", workout_id=workout.id))
+
+            if calories < 0:
+                flash("Calories cannot be negative.", "danger")
+                return redirect(url_for("edit_workout", workout_id=workout.id))
+
             workout.title = request.form.get("title")
             workout.workout_type = request.form.get("workout_type")
-            workout.duration_minutes = int(request.form.get("duration"))
-            workout.calories_burned = int(request.form.get("calories"))
+            workout.duration_minutes = duration
+            workout.calories_burned = calories
             workout.notes = request.form.get("notes")
 
             db.session.commit()
@@ -160,10 +187,7 @@ def create_app():
             flash("Workout updated successfully.", "success")
             return redirect(url_for("dashboard"))
 
-        return render_template(
-            "edit_workout.html",
-            workout=workout
-        )
+        return render_template("edit_workout.html", workout=workout)
 
     @app.route("/workout/<int:workout_id>/delete", methods=["POST"])
     @login_required
@@ -179,15 +203,14 @@ def create_app():
 
         flash("Workout deleted.", "info")
         return redirect(url_for("dashboard"))
-    
+
     @app.route("/about")
     def about():
-         return render_template("about.html")
-
+        return render_template("about.html")
 
     @app.route("/contact")
     def contact():
-         return render_template("contact.html")
+        return render_template("contact.html")
 
     with app.app_context():
         db.create_all()
