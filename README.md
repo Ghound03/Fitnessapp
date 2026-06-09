@@ -1,6 +1,6 @@
 # Fitnessapp
 
-FitTrack Pro is a Flask web application designed to help users track workouts, monitor calories burned, and view progress statistics.
+Fitnessapp is a Flask web application designed to help users track workouts, monitor calories burned, and view progress statistics.
 
 This project was created for the Databases assignment and demonstrates Flask integration with a database, CRUD logic, authentication, HTML, CSS, JavaScript, and deployment preparation.
 
@@ -66,3 +66,7 @@ fittrack-pro/
 │
 └── instance/
     └── db.sqlite3
+
+   
+   
+    https://fitnessapp-0izk.onrender.com
